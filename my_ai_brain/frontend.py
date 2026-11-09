@@ -1,6 +1,5 @@
 import streamlit as st
 from my_ai_brain.chat import chat
-from my_ai_brain.memory import get_db_connection
 
 def render_app():
     # పేజీ హెడ్డర్ మరియు టైటిల్
@@ -23,7 +22,7 @@ def render_app():
             
         st.markdown("---")
         st.subheader("స్థితి (Status)")
-        st.info("బ్యాక్‌ఎండ్ లోకల్ మోడల్ మరియు మెమరీ యాక్టివ్‌గా ఉన్నాయి.")
+        st.info("బ్యాక్‌ఎండ్ లోకల్ మోడల్ యాక్టివ్‌గా ఉంది.")
 
     # చాట్ హిస్టరీని సెషన్ స్టేట్‌లో నిర్వహించడం
     if "messages" not in st.session_state:
@@ -56,4 +55,4 @@ def render_app():
                     error_msg = f"ఎర్రర్ వచ్చింది: {e}"
                     st.error(error_msg)
                     st.session_state.messages.append({"role": "assistant", "content": error_msg})
-                  
+                    
