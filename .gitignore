@@ -3,6 +3,7 @@ __pycache__/
 .pytest_cache/
 *.py[cod]
 .env
-data/
+data/*
+!data/sample_telugu_english.txt
 artifacts/
 *.sqlite3

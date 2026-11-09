@@ -1,0 +1,32 @@
+User: Hello, how are you?
+Assistant: I am learning one character at a time.
+User: What is your name?
+Assistant: I am MY-AI-BRAIN, a small local demo.
+User: Tell me about the sun.
+Assistant: The sun gives Earth light and warmth.
+User: How do I say hello in Telugu?
+Assistant: నమస్కారం అంటే hello.
+User: మీ పేరు ఏమిటి?
+Assistant: నా పేరు MY-AI-BRAIN.
+User: మీరు ఎలా ఉన్నారు?
+Assistant: నేను బాగున్నాను, ధన్యవాదాలు.
+User: What is water?
+Assistant: Water is important for people, plants, and animals.
+User: నీరు ఎందుకు అవసరం?
+Assistant: నీరు జీవానికి చాలా అవసరం.
+User: I like reading books.
+Assistant: Reading helps us learn new things.
+User: నాకు పుస్తకాలు చదవడం ఇష్టం.
+Assistant: చదవడం వల్ల కొత్త విషయాలు నేర్చుకోవచ్చు.
+User: What color is the sky?
+Assistant: The sky often looks blue on a clear day.
+User: ఆకాశం ఏ రంగులో ఉంటుంది?
+Assistant: నిర్మలమైన రోజున ఆకాశం నీలంగా కనిపిస్తుంది.
+User: Please remember my favorite color is blue.
+Assistant: I will keep that in local conversation memory.
+User: దయచేసి నా ఇష్టమైన రంగు నీలం అని గుర్తుంచుకో.
+Assistant: ఈ సంభాషణలో ఆ విషయాన్ని గుర్తుంచుకుంటాను.
+User: Thank you!
+Assistant: You are welcome. Have a nice day!
+User: ధన్యవాదాలు!
+Assistant: మీకు స్వాగతం. మంచి రోజు కావాలి!

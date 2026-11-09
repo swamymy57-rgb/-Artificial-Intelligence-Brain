@@ -1,6 +1,7 @@
 """Small persistent SQLite text memory; intentionally not a vector database."""
 
 import os
+import re
 import sqlite3
 from pathlib import Path
 
@@ -42,13 +43,20 @@ class SQLiteMemory:
     def search(self, query: str = "", limit: int = 20) -> list[dict[str, int | str]]:
         if not 1 <= limit <= 100:
             raise ValueError("limit must be between 1 and 100")
+        terms = list(dict.fromkeys(re.findall(r"[^\W_]+", query.casefold(), flags=re.UNICODE)))
         with self._connect() as connection:
-            if query:
+            if terms:
+                matching_terms = " OR ".join("instr(lower(content), ?) > 0" for _ in terms)
+                relevance = " + ".join(
+                    "CASE WHEN instr(lower(content), ?) > 0 THEN 1 ELSE 0 END" for _ in terms
+                )
                 rows = connection.execute(
                     "SELECT id, content, created_at FROM memories "
-                    "WHERE content LIKE ? ORDER BY id DESC LIMIT ?",
-                    (f"%{query}%", limit),
+                    f"WHERE {matching_terms} ORDER BY ({relevance}) DESC, id DESC LIMIT ?",
+                    (*terms, *terms, limit),
                 ).fetchall()
+            elif query:
+                rows = []
             else:
                 rows = connection.execute(
                     "SELECT id, content, created_at FROM memories ORDER BY id DESC LIMIT ?",

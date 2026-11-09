@@ -33,7 +33,9 @@ def test_sqlite_in_memory_database_survives_connections():
 def test_api_health_generation_and_memory(tmp_path):
     app = create_app(engine=StubGenerator(), memory=SQLiteMemory(tmp_path / "memory.sqlite3"))
     with TestClient(app) as client:
-        assert client.get("/health").json()["model_loaded"] is True
+        health = client.get("/health")
+        assert health.status_code == 200
+        assert health.json() == {"status": "ok", "model_loaded": True}
         response = client.post("/generate", json={"prompt": "hello"})
         assert response.status_code == 200
         assert response.json()["text"] == "hello response"
@@ -42,11 +44,29 @@ def test_api_health_generation_and_memory(tmp_path):
         assert client.get("/memory", params={"query": "local"}).json()["items"][0]["content"] == "a local memory"
 
 
+def test_api_chat_retrieves_memory_across_requests(tmp_path):
+    app = create_app(engine=StubGenerator(), memory=SQLiteMemory(tmp_path / "memory.sqlite3"))
+    with TestClient(app) as client:
+        first = client.post("/chat", json={"message": "Please remember my favorite color is blue."})
+        assert first.status_code == 200
+        assert first.json()["memories"] == []
+
+        second = client.post("/chat", json={"message": "What is my favorite color?"})
+        assert second.status_code == 200
+        assert any(
+            "favorite color is blue" in item["content"]
+            for item in second.json()["memories"]
+        )
+        assert second.json()["reply"] == " response"
+
+
 def test_api_requires_model_for_generation(tmp_path):
-    app = create_app(memory=SQLiteMemory(tmp_path / "memory.sqlite3"))
+    settings = Settings(model_dir=str(tmp_path / "missing-artifacts"), database=str(tmp_path / "memory.sqlite3"))
+    app = create_app(settings=settings)
     with TestClient(app) as client:
         response = client.post("/generate", json={"prompt": "hello"})
         assert response.status_code == 503
+        assert client.post("/chat", json={"message": "hello"}).status_code == 503
 
 
 def test_api_loads_artifacts_and_generates(tmp_path):

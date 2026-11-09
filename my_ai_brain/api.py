@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from my_ai_brain.artifacts import load_artifacts
+from my_ai_brain.chat import chat
 from my_ai_brain.config import Settings
 from my_ai_brain.inference import InferenceEngine
 from my_ai_brain.local_model import TextGenerator
@@ -20,6 +21,11 @@ class GenerateRequest(BaseModel):
 
 class MemoryRequest(BaseModel):
     content: str = Field(min_length=1, max_length=10000)
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=4000)
+    max_new_tokens: int = Field(default=40, ge=0, le=512)
 
 
 def create_app(
@@ -49,6 +55,12 @@ def create_app(
         if active_engine is None:
             raise HTTPException(status_code=503, detail="No model artifacts are loaded")
         return {"text": active_engine.generate(request.prompt, max_new_tokens=request.max_new_tokens)}
+
+    @application.post("/chat")
+    def chat_endpoint(request: ChatRequest) -> dict[str, object]:
+        if active_engine is None:
+            raise HTTPException(status_code=503, detail="No model artifacts are loaded")
+        return chat(active_engine, active_memory, request.message, request.max_new_tokens)
 
     @application.post("/memory", status_code=201)
     def add_memory(request: MemoryRequest) -> dict[str, int]:
